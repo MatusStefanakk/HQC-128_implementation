@@ -3,23 +3,40 @@
 #include "g2fx.h"
 #include "parameters.h"
 #include "api.h"
-// Implementácie funkcií
+
+/*
+Zdroje:
+https://stackoverflow.com/questions/41107016/extracting-bits-from-uint8-t-type-array
+https://www.geeksforgeeks.org/set-clear-and-toggle-a-given-bit-of-a-number-in-c/
+https://aticleworld.com/how-to-set-clear-and-toggle-a-single-bit-in-cc/
+https://aticleworld.com/how-to-set-clear-and-toggle-a-single-bit-in-cc/
+*/
 void set_bit(uint8_t *poly, uint64_t pos, uint8_t value) {
     uint64_t byte_pos = pos / 8;
     uint8_t bit_pos = pos % 8;
-    if (value) {
-        poly[byte_pos] |= (1 << bit_pos);
-    } else {
-        poly[byte_pos] &= ~(1 << bit_pos);
-    }
+
+    value ? (poly[byte_pos] |= (1 << bit_pos)) : (poly[byte_pos] &= ~(1 << bit_pos));
 }
 
+/*
+Zdroje:
+https://stackoverflow.com/questions/41107016/extracting-bits-from-uint8-t-type-array
+https://www.geeksforgeeks.org/set-clear-and-toggle-a-given-bit-of-a-number-in-c/
+https://aticleworld.com/how-to-set-clear-and-toggle-a-single-bit-in-cc/
+https://aticleworld.com/how-to-set-clear-and-toggle-a-single-bit-in-cc/
+*/
 uint8_t get_bit(const uint8_t *poly, uint64_t pos) {
     uint64_t byte_pos = pos / 8;
     uint8_t bit_pos = pos % 8;
     return (poly[byte_pos] >> bit_pos) & 1;
 }
 
+/*
+Zdroje:
+https://github.com/PQClean/PQClean/blob/master/crypto_kem/hqc-256/clean/gf2x.c
+https://stackoverflow.com/questions/79526581/how-to-optimize-my-matrix-multiplication-using-simd-avx2-instructions
+
+*/
 void vect_mul(uint64_t *o, const uint64_t *v1, const uint64_t *v2) {
     uint8_t *tmp = (uint8_t *)malloc(2 * VEC_N_SIZE_BYTES);
     if (!tmp) return;
