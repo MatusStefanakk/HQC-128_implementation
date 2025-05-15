@@ -40,14 +40,7 @@ void keygen_decapsulationTask(void *pvParameters) {
         heap_caps_free(sk);
         vTaskDelete(NULL);
     }
-/* for testing
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    crypto_kem_keypair(pk, sk);
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    double time_ms = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_nsec - start.tv_nsec) / 1000000.0;
-    Serial.printf("Priemerný čas [keygen]: %.3f ms\n",time_ms);
-    time_ms = 0.0;
-*/
+
     hexStringToByteArray(sk_static, sk, SECRET_KEY_BYTES);
     hexStringToByteArray(cipher_text_string, ct, CIPHERTEXT_BYTES);
 
@@ -61,9 +54,6 @@ void keygen_decapsulationTask(void *pvParameters) {
 
     Serial.println("\n ************************************************************************* ");
     
-    //Serial.println("sk: ");
-    //for(int i = 0 ; i < SECRET_KEY_BYTES ; ++i) Serial.printf("%02X", sk[i]);
-
     Serial.println("\nsecret2 (ss): ");
     for (int i = 0; i < SHARED_SECRET_BYTES; ++i) Serial.printf("%02X", key2[i]);
     
@@ -77,16 +67,9 @@ void keygen_decapsulationTask(void *pvParameters) {
 
 void setup() {
     Serial.begin(9600);
-/* for testing
-    uint8_t seed[48];
-    hexStringToByteArray(seedString, seed, 48);
-    shake_prng_init(seed, NULL, 48, 0);
-*/
     delay(5000); 
 
     xTaskCreatePinnedToCore(keygen_decapsulationTask, "keygen_decapsulationTask", 65536, NULL, 1, &keygen_decapsulationTaskHandle, 1);
 }
 
-void loop() {
-  // Empty loop since the program only runs in the setup
-}
+void loop() {}
