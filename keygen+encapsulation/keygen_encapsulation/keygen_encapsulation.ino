@@ -9,9 +9,14 @@
 #include <esp_heap_caps.h> 
 #include <time.h>
 
+//set the seed from hqc-128_kat.req
+const char *seedString = "42C667A186390F26C8F024D31D5FE3D20145BC2FCCF26C865E20DF7626CEF09E4D9EADD263D95EDE934A74B3721EAAB0";
 
-
-//const char *seedString = "42C667A186390F26C8F024D31D5FE3D20145BC2FCCF26C865E20DF7626CEF09E4D9EADD263D95EDE934A74B3721EAAB0";
+void testing(){
+    uint8_t seed[48];
+    hexStringToByteArray(seedString, seed, 48);
+    shake_prng_init(seed, NULL, 48, 0);
+}
 
 void hexStringToByteArray(const char *hexString, uint8_t *byteArray, size_t length) {
     for (size_t i = 0; i < length; i++) {
@@ -73,8 +78,6 @@ void keygen_encapsulationTask(void *pvParameters) {
     Serial.println("\n\nciphertext (ct): "); 
     for(int i = 0 ; i < CIPHERTEXT_BYTES ; ++i) Serial.printf("%02X", ct[i]);
 
-    //test(pk,sk);
-
     // Cleanup
     heap_caps_free(pk);
     heap_caps_free(sk);
@@ -86,16 +89,14 @@ void keygen_encapsulationTask(void *pvParameters) {
 
 void setup() {
     Serial.begin(9600);
-/*
-    uint8_t seed[48];
-    hexStringToByteArray(seedString, seed, 48);
-    shake_prng_init(seed, NULL, 48, 0);
-*/
+    
+    //Comment this if u dont want to use KATs seed for generation
+    //testing(); //for testing
+
     delay(5000); // Allow time for the serial monitor to connect
 
-    // Create  task with 64 KB stack on core 1
     xTaskCreatePinnedToCore(keygen_encapsulationTask, "keygen_encapsulationTask", 65536, NULL, 1, &keygen_encapsulationTaskHandle, 1);
 }
 
-void loop() {
-}
+void loop(){}
+
